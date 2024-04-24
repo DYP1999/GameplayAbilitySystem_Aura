@@ -4,7 +4,7 @@
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-
+#include "Interaction/EnemyInterface.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
@@ -13,6 +13,61 @@ AAuraPlayerController::AAuraPlayerController()
 	
 	
 }
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	CursorTrace();
+	
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility,false,CursorHit);
+	if(!CursorHit.bBlockingHit) return;
+
+	LastActor  = ThisActor;
+	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());//如果这个actor实现这个接口，则转换成这个actor指针,但是这个actor指针和这个actor实现的接口是共用一个指针的 C++的规定   
+		
+	if(LastActor == nullptr)
+	{
+		if(ThisActor != nullptr)
+		{
+			ThisActor->HighlightActor();
+			
+		}
+		else
+		{
+			//nothing
+		}
+		
+	}
+	else//last actor is valid
+	{
+		if(ThisActor!=nullptr)
+		{
+			if(ThisActor == LastActor)
+			{
+				//nothing
+			}
+			else
+			{
+				LastActor->UnHighlightActor();
+				ThisActor->HighlightActor();
+			}
+			
+			
+		}
+		else
+		{
+			LastActor->UnHighlightActor();
+		}
+	}
+
+}
+
+
 
 void AAuraPlayerController::BeginPlay()
 {
@@ -73,3 +128,4 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 		
 	
 }
+
