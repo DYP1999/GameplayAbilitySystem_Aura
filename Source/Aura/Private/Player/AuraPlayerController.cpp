@@ -69,14 +69,23 @@ void AAuraPlayerController::CursorTrace()
 
 
 
-void AAuraPlayerController::BeginPlay()
+void AAuraPlayerController::BeginPlay()//如果有三个角色 这个函数会调用5次  服务器3次  客户端各一次
 {
 	Super::BeginPlay();
 	check(AuraContext);
 
-	UEnhancedInputLocalPlayerSubsystem*  Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-	Subsystem->AddMappingContext(AuraContext,0);
+	//这里必须要加判断 经过测试在listen服务器下 对pawn0执行getlocalplayer会得到他的本地player 但是 如果对 pawn1 和pawn2 执行则会得到空指针导致报错
+	//因为客户端上只有一个控制器因此会拿到自己的player不会报错
+	if(GetLocalPlayer())
+	{
+		UEnhancedInputLocalPlayerSubsystem*  Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+		check(Subsystem);
+		Subsystem->AddMappingContext(AuraContext,0);	
+	}
+
+	
+
+	
 
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
