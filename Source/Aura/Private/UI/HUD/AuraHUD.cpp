@@ -13,6 +13,7 @@ UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidgetCont
 		//动态创建对象,允许创建UOverlayWidgetController类的任何子类，关键要看OverlaywidgetControllerClass具体是什么类的引用
 		OverlayWidgetController = NewObject<UOverlayWidgetController>(this,OverlaywidgetControllerClass);
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
+		OverlayWidgetController->BindCallbacksToDependencies();
 		return OverlayWidgetController;
 	}
 	return OverlayWidgetController;
